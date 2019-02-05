@@ -1,0 +1,21 @@
+{
+  "name": "us-blood-aid",
+  "version": "1.0.0",
+  "description": "Tracking the relationship between US military interventions and foreign aid.",
+  "private": true,
+  "author": "Ivo Murrell",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/d3": "^5.7.0",
+    "@types/node": "^10.12.21",
+    "@types/webpack": "^4.4.24",
+    "ts-loader": "^5.3.3",
+    "ts-node": "^8.0.2",
+    "typescript": "^3.3.1",
+    "webpack": "^4.29.1",
+    "webpack-cli": "^3.2.3"
+  },
+  "dependencies": {
+    "d3": "^5.8.2"
+  }
+}
