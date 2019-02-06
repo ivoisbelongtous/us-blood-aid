@@ -228,7 +228,7 @@
   resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.5.tgz#9aea839ea5af4b1bc079f1d9fa977d48665e02b0"
   integrity sha512-rLlMXpd3rdlrp0+xsrda/hFfOpIxgqFcRpk005UKbHtcdFK+QXAjhBAPnvO58qF4O1LdDXrcaiJxMgstCIlcaw==
 
-"@types/node@*", "@types/node@^10.12.21":
+"@types/node@*":
   version "10.12.21"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.21.tgz#7e8a0c34cf29f4e17a36e9bd0ea72d45ba03908e"
   integrity sha512-CBgLNk4o3XMnqMc0rhb6lc77IwShMEglz05deDcn2lQxyXEZivfwgYJu7SMha9V5XcrP6qZuevTHV/QrN2vjKQ==
@@ -237,6 +237,39 @@
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-1.0.4.tgz#b4ffc7dc97b498c969b360a41eee247f82616370"
   integrity sha512-78AdXtlhpCHT0K3EytMpn4JNxaf5tbqbLcbIRoQIHzpTIyjpxLQKRoxU55ujBXAtg3Nl2h/XWvfDa9dsMOd0pQ==
+
+"@types/topojson-client@*":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/topojson-client/-/topojson-client-3.0.0.tgz#2517fae5abbdd3052eb191747c7d0bc268d69918"
+  integrity sha512-HZH6E8XMhjkDEkkpe3HuIg95COuvjdnyy0EKrh8rAi1f6o/V6P3ly1kGyU2E8bpAffXDd2r+Rk5ceMX4XkqHnA==
+  dependencies:
+    "@types/geojson" "*"
+    "@types/topojson-specification" "*"
+
+"@types/topojson-simplify@*":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/topojson-simplify/-/topojson-simplify-3.0.0.tgz#54ad7e2f172c662c07ad390e5cf965c147093e65"
+  integrity sha512-hfrvjZ/KbdAFBgJzdPfkixHgMNbhRvvFSCIOga1rAeluksFV9sSTWx+N4vZymqcfz1J+yMZfP2SCRt+/DHsJCQ==
+  dependencies:
+    "@types/geojson" "*"
+    "@types/topojson-specification" "*"
+
+"@types/topojson-specification@*":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/topojson-specification/-/topojson-specification-1.0.0.tgz#1c6a62e3caf0148fea56daed15c8e258101b030b"
+  integrity sha512-zHAVeVSwXFSkLQlTwoWdhGAM3TRpV6dbu6D9ZrtqDXwLrD8KHJTFv52Y3IYq7+qveY2tN4389vjOueZL4Bz0EQ==
+  dependencies:
+    "@types/geojson" "*"
+
+"@types/topojson@^3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@types/topojson/-/topojson-3.2.1.tgz#837708acc80ddefb21cec792b03335f42d49d058"
+  integrity sha512-Ffty/wgkLkt2KvLIZwYa30oYoqO5QCqCRZfScnz9hYgQeDqX8uly8SLRsIM46fqD6TvP8ZDIkIRghyfcjPxouQ==
+  dependencies:
+    "@types/geojson" "*"
+    "@types/topojson-client" "*"
+    "@types/topojson-simplify" "*"
+    "@types/topojson-specification" "*"
 
 "@types/uglify-js@*":
   version "3.0.4"
@@ -3129,6 +3162,37 @@ to-regex@^3.0.1, to-regex@^3.0.2:
     regex-not "^1.0.2"
     safe-regex "^1.1.0"
 
+topojson-client@3, topojson-client@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/topojson-client/-/topojson-client-3.0.0.tgz#1f99293a77ef42a448d032a81aa982b73f360d2f"
+  integrity sha1-H5kpOnfvQqRI0DKoGqmCtz82DS8=
+  dependencies:
+    commander "2"
+
+topojson-server@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/topojson-server/-/topojson-server-3.0.0.tgz#378e78e87c3972a7b5be2c5d604369b6bae69c5e"
+  integrity sha1-N4546Hw5cqe1vixdYENptrrmnF4=
+  dependencies:
+    commander "2"
+
+topojson-simplify@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/topojson-simplify/-/topojson-simplify-3.0.2.tgz#8a2403e639531500fafa0c6594e8b0fadebc2c02"
+  integrity sha512-gyYSVRt4jO/0RJXKZQPzTDQRWV+D/nOfiljNUv0HBXslFLtq3yxRHrl7jbrjdbda5Ytdr7M8BZUI4OxU7tnbRQ==
+  dependencies:
+    commander "2"
+    topojson-client "3"
+
+topojson@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/topojson/-/topojson-3.0.2.tgz#fcb927306c3e0fa76656fa58deed4555d2346fb4"
+  integrity sha512-u3zeuL6WEVL0dmsRn7uHZKc4Ao4gpW3sORUv+N3ezLTvY3JdCuyg0hvpWiIfFw8p/JwVN++SvAsFgcFEeR15rQ==
+  dependencies:
+    topojson-client "3.0.0"
+    topojson-server "3.0.0"
+    topojson-simplify "3.0.2"
+
 ts-loader@^5.3.3:
   version "5.3.3"
   resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-5.3.3.tgz#8b4af042e773132d86b3c99ef0acf3b4d325f473"
@@ -3353,6 +3417,11 @@ worker-farm@^1.5.2:
   integrity sha512-6w+3tHbM87WnSWnENBUvA2pxJPLhQUg5LKwUQHq3r+XPhIM+Gh2R5ycbwPCyuGbNg+lPgdcnQUhuC02kJCvffQ==
   dependencies:
     errno "~0.1.7"
+
+world-atlas@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/world-atlas/-/world-atlas-1.1.4.tgz#0f53c44f31b66daa245cf673ccfab5c338903682"
+  integrity sha1-D1PETzG2baokXPZzzPq1wziQNoI=
 
 wrap-ansi@^2.0.0:
   version "2.1.0"
