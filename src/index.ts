@@ -6,7 +6,7 @@ const context = d3
   .select<HTMLCanvasElement, {}>("canvas")
   .node()!
   .getContext("2d")!;
-const path = d3.geoPath().context(context);
+const path = d3.geoPath(d3.geoEqualEarth()).context(context);
 
 context.beginPath();
 path(topojson.mesh(world as any));
