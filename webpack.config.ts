@@ -1,4 +1,5 @@
 import HtmlWebpackPlugin from "html-webpack-plugin";
+import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 import * as path from "path";
 import { Configuration } from "webpack";
 
@@ -15,10 +16,15 @@ const config: Configuration = {
         test: /\.tsx?$/,
         use: "ts-loader",
         exclude: /node_modules/
+      },
+      {
+        test: /\.csv$/,
+        use: "file-loader"
       }
     ]
   },
   resolve: {
+    plugins: [new TsconfigPathsPlugin()],
     extensions: [".tsx", ".ts", ".js"]
   },
   output: {
