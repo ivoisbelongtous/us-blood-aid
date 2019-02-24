@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "d3": "^5.8.2",
+    "iso-3166-1": "^1.1.0",
     "topojson": "^3.0.2",
     "world-atlas": "^1.1.4"
   }
