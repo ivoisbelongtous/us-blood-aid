@@ -81,9 +81,12 @@ d3.csv<AidRecord, AidRecordColumns>(
       row.countryName !== "World" &&
       row.transactionTypeName === "Obligations"
   );
-  const extent = d3.extent(latestYear, row => row.currentAmount);
+  const extent = d3.extent(latestYear, row =>
+    row.currentAmount >= 1 ? row.currentAmount : undefined
+  );
   const colourScale = d3
-    .scaleSequential(d3.interpolatePuBuGn)
+    // @ts-ignore
+    .scaleSequentialLog(d3.interpolatePuBuGn)
     .domain(extent as [number, number]);
 
   const getSpendingInRegion = (countryId: string): number | undefined => {
