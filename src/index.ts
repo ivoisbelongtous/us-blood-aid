@@ -34,22 +34,18 @@ type AidRecordColumns =
 const width = 960;
 const height = 600;
 
-const canvas = d3
+const svg = d3
   .select("body")
-  .append("canvas")
-  .attr("width", width * window.devicePixelRatio)
-  .attr("height", height * window.devicePixelRatio)
-  .style("width", width + "px")
-  .style("height", height + "px");
-const context = canvas.node()!.getContext("2d")!;
-context.scale(window.devicePixelRatio, window.devicePixelRatio);
+  .append("svg")
+  .attr("width", width)
+  .attr("height", height);
 
 const features = topojson.feature(
   world as any,
   world.objects.countries as GeometryCollection
 ).features;
 
-const path = d3.geoPath(d3.geoEqualEarth()).context(context);
+const path = d3.geoPath(d3.geoEqualEarth());
 
 d3.csv<AidRecord, AidRecordColumns>(
   require("us_foreign_aid_country_deduped.csv"),
@@ -90,18 +86,25 @@ d3.csv<AidRecord, AidRecordColumns>(
     .scaleSequential(d3.interpolatePuBuGn)
     .domain(extent as [number, number]);
 
-  features.forEach(feature => {
-    const region = latestYear.find(row => {
-      const country = whereAlpha3(row.countryCode);
-      return country ? country.numeric === feature.id! : false;
-    });
-    context.beginPath();
-    path(feature);
-    context.fillStyle = region ? colourScale(region.currentAmount) : "Silver";
-    context.fill();
-  });
+  svg
+    .append("g")
+    .selectAll("path")
+    .data(features)
+    .join("path")
+    .attr("fill", d => {
+      const region = latestYear.find(row => {
+        const country = whereAlpha3(row.countryCode);
+        return country ? country.numeric === d.id : false;
+      });
+      return region ? colourScale(region.currentAmount) : "Silver";
+    })
+    .attr("d", path);
 
-  context.beginPath();
-  path(topojson.mesh(world as any));
-  context.stroke();
+  svg
+    .append("path")
+    .datum(topojson.mesh(world as any)!)
+    .attr("fill", "none")
+    .attr("stroke", "black")
+    .attr("stroke-linejoin", "round")
+    .attr("d", path);
 });
