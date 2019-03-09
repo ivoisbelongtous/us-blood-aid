@@ -1,5 +1,5 @@
 // @ts-ignore
-import { whereAlpha3 } from "iso-3166-1";
+import * as ISO3166 from "iso-3166-1";
 import * as d3 from "d3";
 import * as topojson from "topojson";
 import { GeometryCollection } from "topojson-specification";
@@ -86,19 +86,34 @@ d3.csv<AidRecord, AidRecordColumns>(
     .scaleSequential(d3.interpolatePuBuGn)
     .domain(extent as [number, number]);
 
+  const getSpendingInRegion = (countryId: string): number | undefined => {
+    const region = latestYear.find(row => {
+      const country = ISO3166.whereAlpha3(row.countryCode);
+      return country ? country.numeric === countryId : false;
+    });
+    return region && region.currentAmount;
+  };
+
   svg
     .append("g")
     .selectAll("path")
     .data(features)
     .join("path")
     .attr("fill", d => {
-      const region = latestYear.find(row => {
-        const country = whereAlpha3(row.countryCode);
-        return country ? country.numeric === d.id : false;
-      });
-      return region ? colourScale(region.currentAmount) : "Silver";
+      const spending = getSpendingInRegion(String(d.id));
+      return spending ? colourScale(spending) : "Silver";
     })
-    .attr("d", path);
+    .attr("d", path)
+    .append("title")
+    .text(d => {
+      const countryID = String(d.id);
+      const country = ISO3166.whereNumeric(countryID);
+      const countryString = country ? `${country.country} - ` : "";
+      const spending = getSpendingInRegion(countryID);
+      const spendingString = spending ? `$${spending.toLocaleString()}` : "N/A";
+
+      return countryString + spendingString;
+    });
 
   svg
     .append("path")
