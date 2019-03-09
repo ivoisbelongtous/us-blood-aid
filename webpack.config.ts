@@ -5,7 +5,7 @@ import { Configuration } from "webpack";
 
 const config: Configuration = {
   entry: "./src/index.ts",
-  devtool: "inline-source-map",
+  devtool: "source-map",
   devServer: {
     contentBase: path.join(__dirname, "dist")
   },
