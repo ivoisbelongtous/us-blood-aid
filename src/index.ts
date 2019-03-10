@@ -1,5 +1,5 @@
-// @ts-ignore
-import * as ISO3166 from "iso-3166-1";
+import * as ISOCountries from "i18n-iso-countries";
+import i18nCountry from "i18n-iso-countries/langs/en.json";
 import * as d3 from "d3";
 import * as topojson from "topojson";
 import { GeometryCollection } from "topojson-specification";
@@ -8,6 +8,8 @@ import world from "world-atlas/world/110m.json";
 import { parseAidRecord } from "parse";
 
 (async () => {
+  ISOCountries.registerLocale(i18nCountry);
+
   const width = 960;
   const height = 600;
 
@@ -43,11 +45,10 @@ import { parseAidRecord } from "parse";
     .scaleSequentialLog(d3.interpolatePuBuGn)
     .domain(extent as [number, number]);
 
-  const getSpendingInRegion = (countryId: string): number | undefined => {
-    const region = latestYear.find(row => {
-      const country = ISO3166.whereAlpha3(row.countryCode);
-      return country ? country.numeric === countryId : false;
-    });
+  const getSpendingInRegion = (countryId: number): number | undefined => {
+    const region = latestYear.find(
+      row => Number(ISOCountries.alpha3ToNumeric(row.countryCode)) === countryId
+    );
     return region && region.currentAmount;
   };
 
@@ -57,15 +58,15 @@ import { parseAidRecord } from "parse";
     .data(features)
     .join("path")
     .attr("fill", d => {
-      const spending = getSpendingInRegion(String(d.id));
+      const spending = getSpendingInRegion(Number(d.id));
       return spending ? colourScale(spending) : "Silver";
     })
     .attr("d", path)
     .append("title")
     .text(d => {
-      const countryID = String(d.id);
-      const country = ISO3166.whereNumeric(countryID);
-      const countryString = country ? `${country.country} - ` : "";
+      const countryID = Number(d.id);
+      const country = ISOCountries.getName(countryID, "en");
+      const countryString = country ? `${country} - ` : "";
       const spending = getSpendingInRegion(countryID);
       const spendingString = spending ? `$${spending.toLocaleString()}` : "N/A";
 
