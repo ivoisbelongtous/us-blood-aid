@@ -5,7 +5,7 @@ import * as topojson from "topojson";
 import { GeometryCollection } from "topojson-specification";
 import world from "world-atlas/world/110m.json";
 
-import { parseAidRecord } from "parse";
+import { parseAidRecord, parseTradeRecord } from "parse";
 
 (async () => {
   ISOCountries.registerLocale(i18nCountry);
@@ -26,30 +26,48 @@ import { parseAidRecord } from "parse";
 
   const path = d3.geoPath(d3.geoEqualEarth());
 
-  const rows = await d3.csv(
+  const aidRows = await d3.csv(
     require("us_foreign_aid_country_deduped.csv"),
     parseAidRecord
   );
+  const tradeRows = await d3.csv(
+    require("us_trade_by_country.csv"),
+    parseTradeRecord
+  );
 
-  const latestYear = rows.filter(
+  const year = 2017;
+
+  const aidYear = aidRows.filter(
     row =>
-      row.fiscalYear.getFullYear() === 2017 &&
+      row.fiscalYear.getFullYear() === year &&
       row.countryName !== "World" &&
       row.transactionTypeName === "Obligations"
   );
-  const extent = d3.extent(latestYear, row =>
+  const tradeYear = tradeRows.filter(row => row.year.getFullYear() === year);
+
+  const aidExtent = d3.extent(aidYear, row =>
     row.currentAmount >= 1 ? row.currentAmount : undefined
   );
-  const colourScale = d3
+  const aidColourScale = d3
     // @ts-ignore
     .scaleSequentialLog(d3.interpolatePuBuGn)
-    .domain(extent as [number, number]);
+    .domain(aidExtent as [number, number]);
 
   const getSpendingInRegion = (countryId: number): number | undefined => {
-    const region = latestYear.find(
+    const region = aidYear.find(
       row => Number(ISOCountries.alpha3ToNumeric(row.countryCode)) === countryId
     );
     return region && region.currentAmount;
+  };
+
+  const getTradingInRegion = (
+    countryId: number
+  ): [number, number] | undefined => {
+    const region = tradeYear.find(
+      row =>
+        Number(ISOCountries.alpha2ToNumeric(row.countryISOCode)) === countryId
+    );
+    return region && [region.imports.total, region.exports.total];
   };
 
   svg
@@ -59,18 +77,25 @@ import { parseAidRecord } from "parse";
     .join("path")
     .attr("fill", d => {
       const spending = getSpendingInRegion(Number(d.id));
-      return spending ? colourScale(spending) : "Silver";
+      return spending ? aidColourScale(spending) : "Silver";
     })
     .attr("d", path)
     .append("title")
     .text(d => {
       const countryID = Number(d.id);
+
       const country = ISOCountries.getName(countryID, "en");
       const countryString = country ? `${country} - ` : "";
+
       const spending = getSpendingInRegion(countryID);
       const spendingString = spending ? `$${spending.toLocaleString()}` : "N/A";
 
-      return countryString + spendingString;
+      const trading = getTradingInRegion(countryID);
+      const tradingString = trading
+        ? `\n$${trading[0].toLocaleString()}/$${trading[1].toLocaleString()}`
+        : "";
+
+      return countryString + spendingString + tradingString;
     });
 
   svg
