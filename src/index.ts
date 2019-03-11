@@ -154,8 +154,10 @@ import { parseAidRecord, parseTradeRecord } from "parse";
       const spendingString = spending ? `$${spending.toLocaleString()}` : "N/A";
 
       const trading = getTradingInRegion(countryID);
-      const tradingString = trading
-        ? `\n$${trading[0].toLocaleString()}/$${trading[1].toLocaleString()}`
+      const tradingStrings =
+        trading && trading.map(t => (t * 1000000).toLocaleString());
+      const tradingString = tradingStrings
+        ? `\n$${tradingStrings[0]}/$${tradingStrings[1]}`
         : "";
 
       return countryString + spendingString + tradingString;
