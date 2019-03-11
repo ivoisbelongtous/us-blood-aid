@@ -105,4 +105,50 @@ import { parseAidRecord, parseTradeRecord } from "parse";
     .attr("stroke", "black")
     .attr("stroke-linejoin", "round")
     .attr("d", path);
+
+  const line = d3.line().curve(d3.curveBasis);
+  const usCentroid = path.centroid(
+    features.find(feature => feature.id === "840")!
+  );
+  const g = svg
+    .append("g")
+    .datum("862")
+    .attr("fill", "none");
+
+  g.append("path")
+    .attr("stroke", "red")
+    .attr("d", d => {
+      const targetCountry = features.find(feature => feature.id === d);
+      if (targetCountry) {
+        const targetCentroid = path.centroid(targetCountry);
+        return line([
+          usCentroid,
+          [
+            (usCentroid[0] + targetCentroid[0]) * 0.56,
+            (usCentroid[1] + targetCentroid[1]) * 0.44
+          ],
+          targetCentroid
+        ]);
+      } else {
+        return null;
+      }
+    });
+  g.append("path")
+    .attr("stroke", "blue")
+    .attr("d", d => {
+      const targetCountry = features.find(feature => feature.id === d);
+      if (targetCountry) {
+        const targetCentroid = path.centroid(targetCountry);
+        return line([
+          targetCentroid,
+          [
+            (usCentroid[0] + targetCentroid[0]) * 0.44,
+            (usCentroid[1] + targetCentroid[1]) * 0.56
+          ],
+          usCentroid
+        ]);
+      } else {
+        return null;
+      }
+    });
 })();
