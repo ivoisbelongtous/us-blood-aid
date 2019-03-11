@@ -17,8 +17,8 @@ import { parseAidRecord, parseTradeRecord } from "parse";
   const svg = d3
     .select("body")
     .append("svg")
-    .attr("width", width)
-    .attr("height", height);
+      .attr("width", width)
+      .attr("height", height);
 
   const features = topojson.feature(
     world as any,
@@ -79,57 +79,57 @@ import { parseAidRecord, parseTradeRecord } from "parse";
     const widthScale = d3.scaleLinear().range([1, 5]);
 
     g.append("path")
-      .attr("stroke", "red")
-      .attr("stroke-width", d => {
-        const trading = getTradingInRegion(Number(d));
-        if (trading) {
-          return widthScale.domain([0, d3.sum(trading)])(trading[1]);
-        } else {
-          return null;
-        }
-      })
-      .attr("d", d => {
-        const targetCountry = features.find(feature => feature.id === d);
-        if (targetCountry) {
-          const targetCentroid = path.centroid(targetCountry);
-          return line([
-            usCentroid,
-            [
-              (usCentroid[0] + targetCentroid[0]) * 0.56,
-              (usCentroid[1] + targetCentroid[1]) * 0.44
-            ],
-            targetCentroid
-          ]);
-        } else {
-          return null;
-        }
-      });
+        .attr("stroke", "red")
+        .attr("stroke-width", d => {
+          const trading = getTradingInRegion(Number(d));
+          if (trading) {
+            return widthScale.domain([0, d3.sum(trading)])(trading[1]);
+          } else {
+            return null;
+          }
+        })
+        .attr("d", d => {
+          const targetCountry = features.find(feature => feature.id === d);
+          if (targetCountry) {
+            const targetCentroid = path.centroid(targetCountry);
+            return line([
+              usCentroid,
+              [
+                (usCentroid[0] + targetCentroid[0]) * 0.56,
+                (usCentroid[1] + targetCentroid[1]) * 0.44
+              ],
+              targetCentroid
+            ]);
+          } else {
+            return null;
+          }
+        });
     g.append("path")
-      .attr("stroke", "blue")
-      .attr("stroke-width", d => {
-        const trading = getTradingInRegion(Number(d));
-        if (trading) {
-          return widthScale.domain([0, d3.sum(trading)])(trading[0]);
-        } else {
-          return null;
-        }
-      })
-      .attr("d", d => {
-        const targetCountry = features.find(feature => feature.id === d);
-        if (targetCountry) {
-          const targetCentroid = path.centroid(targetCountry);
-          return line([
-            targetCentroid,
-            [
-              (usCentroid[0] + targetCentroid[0]) * 0.44,
-              (usCentroid[1] + targetCentroid[1]) * 0.56
-            ],
-            usCentroid
-          ]);
-        } else {
-          return null;
-        }
-      });
+        .attr("stroke", "blue")
+        .attr("stroke-width", d => {
+          const trading = getTradingInRegion(Number(d));
+          if (trading) {
+            return widthScale.domain([0, d3.sum(trading)])(trading[0]);
+          } else {
+            return null;
+          }
+        })
+        .attr("d", d => {
+          const targetCountry = features.find(feature => feature.id === d);
+          if (targetCountry) {
+            const targetCentroid = path.centroid(targetCountry);
+            return line([
+              targetCentroid,
+              [
+                (usCentroid[0] + targetCentroid[0]) * 0.44,
+                (usCentroid[1] + targetCentroid[1]) * 0.56
+              ],
+              usCentroid
+            ]);
+          } else {
+            return null;
+          }
+        });
   };
 
   const drawTradingArrows = (targetFeature: Feature) => {
@@ -141,8 +141,8 @@ import { parseAidRecord, parseTradeRecord } from "parse";
         appendArrows(g);
         return g;
       })
-      .attr("class", "trading-arrows")
-      .attr("fill", "none");
+        .attr("class", "trading-arrows")
+        .attr("fill", "none");
   };
 
   svg
@@ -150,37 +150,38 @@ import { parseAidRecord, parseTradeRecord } from "parse";
     .selectAll("path")
     .data(features)
     .join("path")
-    .attr("fill", d => {
-      const spending = getSpendingInRegion(Number(d.id));
-      return spending ? aidColourScale(spending) : "Silver";
-    })
-    .attr("d", path)
-    .on("mouseover", drawTradingArrows)
+      .attr("fill", d => {
+        const spending = getSpendingInRegion(Number(d.id));
+        return spending ? aidColourScale(spending) : "Silver";
+      })
+      .attr("d", path)
+      .on("mouseover", drawTradingArrows)
     .append("title")
-    .text(d => {
-      const countryID = Number(d.id);
+      .text(d => {
+        const countryID = Number(d.id);
 
-      const country = ISOCountries.getName(countryID, "en");
-      const countryString = country ? `${country} - ` : "";
+        const country = ISOCountries.getName(countryID, "en");
+        const countryString = country ? `${country} - ` : "";
 
-      const spending = getSpendingInRegion(countryID);
-      const spendingString = spending ? `$${spending.toLocaleString()}` : "N/A";
+        const spending = getSpendingInRegion(countryID);
+        const spendingString =
+          spending ? `$${spending.toLocaleString()}` : "N/A";
 
-      const trading = getTradingInRegion(countryID);
-      const tradingStrings =
-        trading && trading.map(t => (t * 1000000).toLocaleString());
-      const tradingString = tradingStrings
-        ? `\n$${tradingStrings[0]}/$${tradingStrings[1]}`
-        : "";
+        const trading = getTradingInRegion(countryID);
+        const tradingStrings =
+          trading && trading.map(t => (t * 1000000).toLocaleString());
+        const tradingString = tradingStrings
+          ? `\n$${tradingStrings[0]}/$${tradingStrings[1]}`
+          : "";
 
-      return countryString + spendingString + tradingString;
-    });
+        return countryString + spendingString + tradingString;
+      });
 
   svg
     .append("path")
-    .datum(topojson.mesh(world as any)!)
-    .attr("fill", "none")
-    .attr("stroke", "black")
-    .attr("stroke-linejoin", "round")
-    .attr("d", path);
+      .datum(topojson.mesh(world as any)!)
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-linejoin", "round")
+      .attr("d", path);
 })();
