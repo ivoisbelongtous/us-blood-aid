@@ -110,6 +110,7 @@ import { parseAidRecord, parseTradeRecord } from "parse";
   const usCentroid = path.centroid(
     features.find(feature => feature.id === "840")!
   );
+  const widthScale = d3.scaleLinear().range([1, 5]);
   const g = svg
     .append("g")
     .datum("862")
@@ -117,6 +118,14 @@ import { parseAidRecord, parseTradeRecord } from "parse";
 
   g.append("path")
     .attr("stroke", "red")
+    .attr("stroke-width", d => {
+      const trading = getTradingInRegion(Number(d));
+      if (trading) {
+        return widthScale.domain([0, d3.sum(trading)])(trading[1]);
+      } else {
+        return null;
+      }
+    })
     .attr("d", d => {
       const targetCountry = features.find(feature => feature.id === d);
       if (targetCountry) {
@@ -135,6 +144,14 @@ import { parseAidRecord, parseTradeRecord } from "parse";
     });
   g.append("path")
     .attr("stroke", "blue")
+    .attr("stroke-width", d => {
+      const trading = getTradingInRegion(Number(d));
+      if (trading) {
+        return widthScale.domain([0, d3.sum(trading)])(trading[0]);
+      } else {
+        return null;
+      }
+    })
     .attr("d", d => {
       const targetCountry = features.find(feature => feature.id === d);
       if (targetCountry) {
