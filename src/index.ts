@@ -78,65 +78,68 @@ import { parseAidRecord, parseTradeRecord } from "parse";
     );
     const widthScale = d3.scaleLinear().range([1, 5]);
 
-    const g = svg
+    svg
       .selectAll("g.trading-arrows")
       .data([targetFeature.id], d => String(d))
-      .join("g")
+      .join(enter => {
+        const g = enter.append("g");
+        g.append("path")
+          .attr("stroke", "red")
+          .attr("stroke-width", d => {
+            const trading = getTradingInRegion(Number(d));
+            if (trading) {
+              return widthScale.domain([0, d3.sum(trading)])(trading[1]);
+            } else {
+              return null;
+            }
+          })
+          .attr("d", d => {
+            const targetCountry = features.find(feature => feature.id === d);
+            if (targetCountry) {
+              const targetCentroid = path.centroid(targetCountry);
+              return line([
+                usCentroid,
+                [
+                  (usCentroid[0] + targetCentroid[0]) * 0.56,
+                  (usCentroid[1] + targetCentroid[1]) * 0.44
+                ],
+                targetCentroid
+              ]);
+            } else {
+              return null;
+            }
+          });
+        g.append("path")
+          .attr("stroke", "blue")
+          .attr("stroke-width", d => {
+            const trading = getTradingInRegion(Number(d));
+            if (trading) {
+              return widthScale.domain([0, d3.sum(trading)])(trading[0]);
+            } else {
+              return null;
+            }
+          })
+          .attr("d", d => {
+            const targetCountry = features.find(feature => feature.id === d);
+            if (targetCountry) {
+              const targetCentroid = path.centroid(targetCountry);
+              return line([
+                targetCentroid,
+                [
+                  (usCentroid[0] + targetCentroid[0]) * 0.44,
+                  (usCentroid[1] + targetCentroid[1]) * 0.56
+                ],
+                usCentroid
+              ]);
+            } else {
+              return null;
+            }
+          });
+
+        return g;
+      })
       .attr("class", "trading-arrows")
       .attr("fill", "none");
-
-    g.append("path")
-      .attr("stroke", "red")
-      .attr("stroke-width", d => {
-        const trading = getTradingInRegion(Number(d));
-        if (trading) {
-          return widthScale.domain([0, d3.sum(trading)])(trading[1]);
-        } else {
-          return null;
-        }
-      })
-      .attr("d", d => {
-        const targetCountry = features.find(feature => feature.id === d);
-        if (targetCountry) {
-          const targetCentroid = path.centroid(targetCountry);
-          return line([
-            usCentroid,
-            [
-              (usCentroid[0] + targetCentroid[0]) * 0.56,
-              (usCentroid[1] + targetCentroid[1]) * 0.44
-            ],
-            targetCentroid
-          ]);
-        } else {
-          return null;
-        }
-      });
-    g.append("path")
-      .attr("stroke", "blue")
-      .attr("stroke-width", d => {
-        const trading = getTradingInRegion(Number(d));
-        if (trading) {
-          return widthScale.domain([0, d3.sum(trading)])(trading[0]);
-        } else {
-          return null;
-        }
-      })
-      .attr("d", d => {
-        const targetCountry = features.find(feature => feature.id === d);
-        if (targetCountry) {
-          const targetCentroid = path.centroid(targetCountry);
-          return line([
-            targetCentroid,
-            [
-              (usCentroid[0] + targetCentroid[0]) * 0.44,
-              (usCentroid[1] + targetCentroid[1]) * 0.56
-            ],
-            usCentroid
-          ]);
-        } else {
-          return null;
-        }
-      });
   };
 
   svg
