@@ -72,6 +72,12 @@ import { parseAidRecord, parseTradeRecord } from "parse";
   };
 
   const drawTradingArrows = (targetFeature: Feature) => {
+    const line = d3.line().curve(d3.curveBasis);
+    const usCentroid = path.centroid(
+      features.find(feature => feature.id === "840")!
+    );
+    const widthScale = d3.scaleLinear().range([1, 5]);
+
     const g = svg
       .selectAll("g.trading-arrows")
       .data([targetFeature.id], d => String(d))
@@ -171,10 +177,4 @@ import { parseAidRecord, parseTradeRecord } from "parse";
     .attr("stroke", "black")
     .attr("stroke-linejoin", "round")
     .attr("d", path);
-
-  const line = d3.line().curve(d3.curveBasis);
-  const usCentroid = path.centroid(
-    features.find(feature => feature.id === "840")!
-  );
-  const widthScale = d3.scaleLinear().range([1, 5]);
 })();
