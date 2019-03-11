@@ -1,6 +1,7 @@
 import * as ISOCountries from "i18n-iso-countries";
 import i18nCountry from "i18n-iso-countries/langs/en.json";
 import * as d3 from "d3";
+import { Feature } from "geojson";
 import * as topojson from "topojson";
 import { GeometryCollection } from "topojson-specification";
 import world from "world-atlas/world/110m.json";
@@ -70,6 +71,67 @@ import { parseAidRecord, parseTradeRecord } from "parse";
     return region && [region.imports.total, region.exports.total];
   };
 
+  const drawTradingArrows = (targetFeature: Feature) => {
+    const g = tradingArrowRoot
+      .selectAll("g")
+      .data([targetFeature.id], d => String(d))
+      .join("g")
+      .attr("fill", "none");
+
+    g.append("path")
+      .attr("stroke", "red")
+      .attr("stroke-width", d => {
+        const trading = getTradingInRegion(Number(d));
+        if (trading) {
+          return widthScale.domain([0, d3.sum(trading)])(trading[1]);
+        } else {
+          return null;
+        }
+      })
+      .attr("d", d => {
+        const targetCountry = features.find(feature => feature.id === d);
+        if (targetCountry) {
+          const targetCentroid = path.centroid(targetCountry);
+          return line([
+            usCentroid,
+            [
+              (usCentroid[0] + targetCentroid[0]) * 0.56,
+              (usCentroid[1] + targetCentroid[1]) * 0.44
+            ],
+            targetCentroid
+          ]);
+        } else {
+          return null;
+        }
+      });
+    g.append("path")
+      .attr("stroke", "blue")
+      .attr("stroke-width", d => {
+        const trading = getTradingInRegion(Number(d));
+        if (trading) {
+          return widthScale.domain([0, d3.sum(trading)])(trading[0]);
+        } else {
+          return null;
+        }
+      })
+      .attr("d", d => {
+        const targetCountry = features.find(feature => feature.id === d);
+        if (targetCountry) {
+          const targetCentroid = path.centroid(targetCountry);
+          return line([
+            targetCentroid,
+            [
+              (usCentroid[0] + targetCentroid[0]) * 0.44,
+              (usCentroid[1] + targetCentroid[1]) * 0.56
+            ],
+            usCentroid
+          ]);
+        } else {
+          return null;
+        }
+      });
+  };
+
   svg
     .append("g")
     .selectAll("path")
@@ -80,6 +142,7 @@ import { parseAidRecord, parseTradeRecord } from "parse";
       return spending ? aidColourScale(spending) : "Silver";
     })
     .attr("d", path)
+    .on("mouseover", drawTradingArrows)
     .append("title")
     .text(d => {
       const countryID = Number(d.id);
@@ -106,66 +169,10 @@ import { parseAidRecord, parseTradeRecord } from "parse";
     .attr("stroke-linejoin", "round")
     .attr("d", path);
 
+  const tradingArrowRoot = svg.append("g");
   const line = d3.line().curve(d3.curveBasis);
   const usCentroid = path.centroid(
     features.find(feature => feature.id === "840")!
   );
   const widthScale = d3.scaleLinear().range([1, 5]);
-  const g = svg
-    .append("g")
-    .datum("862")
-    .attr("fill", "none");
-
-  g.append("path")
-    .attr("stroke", "red")
-    .attr("stroke-width", d => {
-      const trading = getTradingInRegion(Number(d));
-      if (trading) {
-        return widthScale.domain([0, d3.sum(trading)])(trading[1]);
-      } else {
-        return null;
-      }
-    })
-    .attr("d", d => {
-      const targetCountry = features.find(feature => feature.id === d);
-      if (targetCountry) {
-        const targetCentroid = path.centroid(targetCountry);
-        return line([
-          usCentroid,
-          [
-            (usCentroid[0] + targetCentroid[0]) * 0.56,
-            (usCentroid[1] + targetCentroid[1]) * 0.44
-          ],
-          targetCentroid
-        ]);
-      } else {
-        return null;
-      }
-    });
-  g.append("path")
-    .attr("stroke", "blue")
-    .attr("stroke-width", d => {
-      const trading = getTradingInRegion(Number(d));
-      if (trading) {
-        return widthScale.domain([0, d3.sum(trading)])(trading[0]);
-      } else {
-        return null;
-      }
-    })
-    .attr("d", d => {
-      const targetCountry = features.find(feature => feature.id === d);
-      if (targetCountry) {
-        const targetCentroid = path.centroid(targetCountry);
-        return line([
-          targetCentroid,
-          [
-            (usCentroid[0] + targetCentroid[0]) * 0.44,
-            (usCentroid[1] + targetCentroid[1]) * 0.56
-          ],
-          usCentroid
-        ]);
-      } else {
-        return null;
-      }
-    });
 })();
